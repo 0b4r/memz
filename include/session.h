@@ -4,29 +4,27 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "region.h"
+
 typedef struct {
     uint8_t *data;
     size_t tlen;
 } Target;
 
-typedef struct {
-    uintptr_t s_addr;
-    uintptr_t e_addr;
-    size_t size;
-    char perms[5];
-} MemoryRegion;
-
-typedef struct {
+struct Session {
     pid_t pid;
     MemoryRegion *regions;
     size_t reg_count;
     uintptr_t *hits;
     size_t hit_count;
     Target target;
-} Session;
+    char pname[64];
+};
 
-Session *init_session();
-void destroy_session(Session **s);
-void print_session(Session *s);
+Session *session_init();
+int session_attach_pid(Session *s, pid_t pid);
+int session_get_pname(pid_t pid, char *out, size_t maxlen);
+void session_destroy(Session **s);
+void session_print(Session *s);
 
 #endif /* session.h */
